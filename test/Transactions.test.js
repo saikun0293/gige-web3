@@ -1,10 +1,8 @@
 const Transactions = artifacts.require("./Transactions.sol")
 
-require("chai")
-	.use(require("chai-as-promised"))
-	.should()
+require("chai").use(require("chai-as-promised")).should()
 
-contract("Transactions", ([accn1, buyer, seller]) => {
+contract("Transactions", ([accn1, seller, buyer]) => {
 	let transactions
 
 	before(async () => {
@@ -21,11 +19,11 @@ contract("Transactions", ([accn1, buyer, seller]) => {
 
 		it("fetches user info", async () => {
 			const user1 = await transactions.fetchUserInfo({ from: accn1 })
-			assert.deepEqual(["a1", "a1", "a1"], user1)
+			assert.deepEqual({ 0: "a1", 1: "a1", 2: "a1", name: "a1", email: "a1", phone: "a1" }, user1)
 			const user2 = await transactions.fetchUserInfo({ from: buyer })
-			assert.deepEqual(["b1", "b1", "b1"], user2)
+			assert.deepEqual({ 0: "b1", 1: "b1", 2: "b1", name: "b1", email: "b1", phone: "b1" }, user2)
 			const user3 = await transactions.fetchUserInfo({ from: seller })
-			assert.deepEqual(["c1", "c1", "c1"], user3)
+			assert.deepEqual({ 0: "c1", 1: "c1", 2: "c1", name: "c1", email: "c1", phone: "c1" }, user3)
 		})
 	})
 

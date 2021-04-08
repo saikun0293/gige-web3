@@ -4,6 +4,8 @@ import Web3 from "web3"
 import { BrowserRouter, Route } from "react-router-dom"
 import { Dashboard } from "./Dashboard"
 import { SellProduct } from "./SellProduct"
+import { SignUp } from "./SignUp"
+import { Product } from "./Product"
 
 export const App = () => {
 	const [account, setAccount] = useState(null)
@@ -26,20 +28,36 @@ export const App = () => {
 			const networkId = await web3.eth.net.getId()
 			const networkData = Transaction.networks[networkId]
 			if (networkData) {
-				setTransactions(web3.eth.Contract(Transaction.abi, networkData.address))
+				setTransactions(new web3.eth.Contract(Transaction.abi, networkData.address))
 			} else {
 				window.alert("Transaction contract not deployed to detected network.")
 			}
 		})()
 	}, [])
 
-	return (
+	return transactions === null ? (
+		<div>Loading</div>
+	) : (
 		<BrowserRouter>
-			<Route path='/' exact render={() => <Dashboard transactions={transactions} />} />
+			<Route
+				path='/'
+				exact
+				render={() => <Dashboard transactions={transactions} account={account} />}
+			/>
 			<Route
 				path='/sell'
 				exact
 				render={() => <SellProduct transactions={transactions} account={account} />}
+			/>
+			<Route
+				path='/product/:id'
+				exact
+				render={() => <Product transactions={transactions} account={account} />}
+			/>
+			<Route
+				path='/signUp'
+				exact
+				render={() => <SignUp transactions={transactions} account={account} />}
 			/>
 		</BrowserRouter>
 	)

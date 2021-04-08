@@ -1,14 +1,29 @@
-import React, { useRef } from "react"
+import React, { useEffect, useRef } from "react"
+import { useHistory } from "react-router-dom"
 
 export const SellProduct = ({ transactions, account }) => {
+	const history = useHistory()
+
 	const nameRef = useRef()
 	const imageUrlRef = useRef()
 	const descriptionRef = useRef()
 	const priceRef = useRef()
 
+	useEffect(() => {
+		;(async () => {
+			try {
+				const res = await transactions.methods.fetchUserInfo().call({ from: account })
+				console.log(res)
+			} catch (err) {
+				console.log(err)
+				history.push("/signUp")
+			}
+		})()
+	}, [account, transactions.methods, history])
+
 	return (
 		<form
-			onSubmit={async event => {
+			onSubmit={event => {
 				event.preventDefault()
 				transactions.methods
 					.sellProduct(
@@ -18,8 +33,11 @@ export const SellProduct = ({ transactions, account }) => {
 						priceRef.current.value
 					)
 					.send({ from: account })
-					.once("receipt", res => {
-						console.log(JSON.stringify(res, null, "\t"))
+					.on("receipt", receipt => {
+						console.log(receipt)
+					})
+					.on("error", error => {
+						console.error(error)
 					})
 			}}
 		>

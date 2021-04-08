@@ -1,5 +1,4 @@
 pragma solidity >=0.4.21 <0.6.0;
-pragma experimental ABIEncoderV2;
 
 import { AuthenticationLib as Auth } from "./AuthenticationLib.sol";
 import { ProductLib } from "./ProductLib.sol";
@@ -10,11 +9,22 @@ contract Transactions {
 
    using ProductLib for ProductLib.Product[];
    ProductLib.Product[] public products;
+
+   event ProductCreated(
+     string name,
+     address owner,
+     address seller,
+     string imageUrl,
+     string description,
+     uint price
+   );
    
    modifier shouldBeAuthenticated(bool _shouldBeAuthenticated) {
       require(
          authData.has(msg.sender) == _shouldBeAuthenticated, 
-         "User has already been Authenticated"
+         _shouldBeAuthenticated 
+            ? "User has not been Authenticated" 
+            : "User has already been Authenticated"
       );
       _;
    }
@@ -27,19 +37,13 @@ contract Transactions {
 
    function signUp(string memory _name, string memory _email, string memory _phone)
    public shouldBeAuthenticated(false) {
-      authData.add(
-         msg.sender, 
-         Auth.UserInfo({
-            name: _name,
-            email: _email,
-            phone: _phone
-         })
-      );
+      authData.add(_name, _email, _phone);
    }
 
    function fetchUserInfo() 
-   public view shouldBeAuthenticated(true) returns(Auth.UserInfo memory) {
-      return authData.get(msg.sender);
+   public view shouldBeAuthenticated(true) 
+   returns(string memory name, string memory email, string memory phone) {
+      return authData.get();
    }
 
    function sellProduct(
@@ -47,9 +51,16 @@ contract Transactions {
       string memory _imageUrl,
       string memory _description,
       uint _price
-   ) public returns(bool) {
+   ) public {
       products.addToSell(_name, _imageUrl, _description, _price);
-      return true;
+      emit ProductCreated({
+         name: _name,
+         owner: msg.sender,
+         seller: msg.sender,
+         imageUrl: _imageUrl,
+         description: _description,
+         price: _price
+      });
    }
 
    function buyProduct(uint _productId) 
