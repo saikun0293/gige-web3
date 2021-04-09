@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useUserInfo } from "../utils/userInfo.hook"
 
 export const Dashboard = ({ transactions, account }) => {
+	const { userInfo, error: userInfoError } = useUserInfo(transactions, account)
+
 	const [products, setProducts] = useState([])
 
 	useEffect(() => {
@@ -29,7 +32,8 @@ export const Dashboard = ({ transactions, account }) => {
 	}, [transactions])
 
 	console.log(products)
-	console.log(account)
+	console.log(userInfo)
+	console.log(userInfoError)
 
 	return (
 		<div>

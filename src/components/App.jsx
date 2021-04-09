@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from "react"
-import Transaction from "../abis/Transactions.json"
-import Web3 from "web3"
+import React, { useEffect, useState } from "react"
 import { BrowserRouter, Route } from "react-router-dom"
+import Web3 from "web3"
+import Transaction from "../abis/Transactions.json"
 import { Dashboard } from "./Dashboard"
+import { History } from "./History"
+import { Product } from "./Product"
 import { SellProduct } from "./SellProduct"
 import { SignUp } from "./SignUp"
-import { Product } from "./Product"
-import { History } from "./History"
 
 export const App = () => {
 	const [account, setAccount] = useState(null)

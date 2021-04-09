@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
+import { useUserInfo } from "../utils/userInfo.hook"
 
 export const History = ({ transactions, account }) => {
-	const [products, setProducts] = useState([])
+	const { userInfo } = useUserInfo(transactions, account, "/signUp")
 
-	useEffect(() => {
-		transactions.events.ProductCreated({}).on("data", event => {
-			console.log(event)
-			setProducts(prevProducts => [...prevProducts, event.returnValues])
-		})
-	}, [transactions.events])
+	const [products, setProducts] = useState([])
 
 	useEffect(() => {
 		;(async () => {
@@ -29,7 +25,7 @@ export const History = ({ transactions, account }) => {
 	}, [transactions, account])
 
 	console.log(products)
-	console.log(account)
+	console.log(userInfo)
 
 	return (
 		<div>
