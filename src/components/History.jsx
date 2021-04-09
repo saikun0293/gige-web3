@@ -1,28 +1,13 @@
-import React, { useEffect, useState } from "react"
+import React, { useCallback } from "react"
 import { Link } from "react-router-dom"
-import { useUserInfo } from "../utils/userInfo.hook"
+import { useDataInfo, useAllProducts } from "../utils"
 
-export const History = ({ transactions, account }) => {
-	const { userInfo } = useUserInfo(transactions, account, "/signUp")
-
-	const [products, setProducts] = useState([])
-
-	useEffect(() => {
-		;(async () => {
-			const totalProducts = await transactions.methods.totalProducts().call()
-			console.log(totalProducts)
-
-			const productsReceived = Array.from({ length: totalProducts }, (_, idx) =>
-				transactions.methods.fetchProduct(idx).call()
-			)
-
-			const productsCollected = (await Promise.all(productsReceived)).filter(
-				({ seller, owner }) => owner !== seller && owner === account
-			)
-
-			setProducts(productsCollected)
-		})()
-	}, [transactions, account])
+export const History = ({ transactions, account, fetchUserInfo }) => {
+	const { data: userInfo } = useDataInfo(fetchUserInfo, "/signUp")
+	const [products] = useAllProducts(
+		transactions,
+		useCallback(({ seller, owner }) => owner !== seller && owner === account, [account])
+	)
 
 	console.log(products)
 	console.log(userInfo)

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { useUserInfo } from "../utils/userInfo.hook"
+import { useDataInfo } from "../utils"
 
-export const Product = ({ transactions, account }) => {
+export const Product = ({ transactions, account, fetchUserInfo }) => {
 	const history = useHistory()
 	const { id: productId } = useParams()
-	const { userInfo } = useUserInfo(transactions, account, "/signUp")
+	const { data: userInfo } = useDataInfo(fetchUserInfo, "/signUp")
 
 	const [product, setProduct] = useState(null)
 	const [seller, setSeller] = useState(null)

@@ -1,8 +1,8 @@
 import React, { useRef } from "react"
-import { useUserInfo } from "../utils/userInfo.hook"
+import { useDataInfo } from "../utils"
 
-export const SellProduct = ({ transactions, account }) => {
-	const { userInfo } = useUserInfo(transactions, account, "/signUp")
+export const SellProduct = ({ transactions, account, fetchUserInfo }) => {
+	const { data: userInfo } = useDataInfo(fetchUserInfo, "/signUp")
 
 	const productNameRef = useRef()
 	const imageUrl1Ref = useRef()

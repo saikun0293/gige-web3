@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import { BrowserRouter, Route } from "react-router-dom"
 import Web3 from "web3"
 import Transaction from "../abis/Transactions.json"
@@ -36,6 +36,11 @@ export const App = () => {
 		})()
 	}, [])
 
+	const fetchUserInfo = useCallback(
+		() => transactions.methods.fetchUserInfo().call({ from: account }),
+		[transactions, account]
+	)
+
 	return transactions === null ? (
 		<div>Loading</div>
 	) : (
@@ -43,27 +48,41 @@ export const App = () => {
 			<Route
 				path='/'
 				exact
-				render={() => <Dashboard transactions={transactions} account={account} />}
+				render={() => (
+					<Dashboard transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
+				)}
 			/>
 			<Route
 				path='/history'
 				exact
-				render={() => <History transactions={transactions} account={account} />}
+				render={() => (
+					<History transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
+				)}
 			/>
 			<Route
 				path='/sell'
 				exact
-				render={() => <SellProduct transactions={transactions} account={account} />}
+				render={() => (
+					<SellProduct
+						transactions={transactions}
+						account={account}
+						fetchUserInfo={fetchUserInfo}
+					/>
+				)}
 			/>
 			<Route
 				path='/product/:id'
 				exact
-				render={() => <Product transactions={transactions} account={account} />}
+				render={() => (
+					<Product transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
+				)}
 			/>
 			<Route
 				path='/signUp'
 				exact
-				render={() => <SignUp transactions={transactions} account={account} />}
+				render={() => (
+					<SignUp transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
+				)}
 			/>
 		</BrowserRouter>
 	)

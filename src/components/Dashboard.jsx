@@ -1,35 +1,29 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useCallback } from "react"
 import { Link } from "react-router-dom"
-import { useUserInfo } from "../utils/userInfo.hook"
+import { useAllProducts, useDataInfo } from "../utils"
 
-export const Dashboard = ({ transactions, account }) => {
-	const { userInfo, error: userInfoError } = useUserInfo(transactions, account)
-
-	const [products, setProducts] = useState([])
+export const Dashboard = ({ transactions, fetchUserInfo }) => {
+	const { data: userInfo, error: userInfoError } = useDataInfo(fetchUserInfo)
+	const [products, setProducts] = useAllProducts(
+		transactions,
+		useCallback(({ seller, owner }) => owner === seller, [])
+	)
 
 	useEffect(() => {
 		transactions.events.ProductCreated({}).on("data", event => {
 			console.log(event)
 			setProducts(prevProducts => [...prevProducts, event.returnValues])
 		})
-	}, [transactions.events])
+	}, [transactions.events, setProducts])
 
 	useEffect(() => {
-		;(async () => {
-			const totalProducts = await transactions.methods.totalProducts().call()
-			console.log(totalProducts)
-
-			const productsReceived = Array.from({ length: totalProducts }, (_, idx) =>
-				transactions.methods.fetchProduct(idx).call()
+		transactions.events.ProductBought({}).on("data", event => {
+			console.log(event)
+			setProducts(prevProducts =>
+				prevProducts.filter(product => product.id !== event.returnValues.id)
 			)
-
-			const productsCollected = (await Promise.all(productsReceived)).filter(
-				({ seller, owner }) => owner === seller
-			)
-
-			setProducts(productsCollected)
-		})()
-	}, [transactions])
+		})
+	}, [transactions.events, setProducts])
 
 	console.log(products)
 	console.log(userInfo)
