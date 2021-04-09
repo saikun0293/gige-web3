@@ -7,16 +7,19 @@ contract Transactions {
    using Auth for Auth.Data;
    Auth.Data authData;
 
-   using ProductLib for ProductLib.Product[];
-   ProductLib.Product[] public products;
+   using ProductLib for ProductLib.Data;
+   ProductLib.Data productsData;
 
    event ProductCreated(
-     string name,
-     address owner,
-     address seller,
-     string imageUrl,
-     string description,
-     uint price
+      uint id,
+      string productName,
+      address owner,
+      address seller,
+      string imageUrl1,
+      string imageUrl2,
+      string description,
+      string location,
+      uint price
    );
    
    modifier shouldBeAuthenticated(bool _shouldBeAuthenticated) {
@@ -31,46 +34,65 @@ contract Transactions {
 
    modifier hasEnoughAmount(uint _amount) {
       require(_amount <= msg.value, "Transaction Rejected : Not enough credits supplied");
-      require(_amount >= msg.value, "Transaction Rejected : Extra credits supplied");
       _;
    }
 
    function signUp(string memory _name, string memory _email, string memory _phone)
    public shouldBeAuthenticated(false) {
-      authData.add(_name, _email, _phone);
+      authData.add(msg.sender, _name, _email, _phone);
    }
 
    function fetchUserInfo() 
    public view shouldBeAuthenticated(true) 
    returns(string memory name, string memory email, string memory phone) {
-      return authData.get();
+      return authData.get(msg.sender);
    }
 
    function sellProduct(
-      string memory _name,
-      string memory _imageUrl,
+      string memory _productName,
+      string memory _imageUrl1,
+      string memory _imageUrl2,
       string memory _description,
+      string memory _location,
       uint _price
    ) public {
-      products.addToSell(_name, _imageUrl, _description, _price);
+      productsData.addToSell(_productName, _imageUrl1, _imageUrl2, _description,_location, _price);
       emit ProductCreated({
-         name: _name,
+         id: productsData.totalProducts - 1,
+         productName: _productName,
          owner: msg.sender,
          seller: msg.sender,
-         imageUrl: _imageUrl,
+         imageUrl1: _imageUrl1,
+         imageUrl2: _imageUrl2,
          description: _description,
+         location: _location,
          price: _price
       });
    }
 
    function buyProduct(uint _productId) 
    public payable
-   hasEnoughAmount(products[_productId].price)  {
-      products.getToBuy(_productId);
-      address(products[_productId].seller).transfer(msg.value);
+   hasEnoughAmount(productsData.products[_productId].price)  {
+      productsData.getToBuy(_productId);
+      address(productsData.products[_productId].seller).transfer(msg.value);
    }
 
    function totalProducts() public view returns(uint) {
-      return products.length;
+      return productsData.totalProducts;
+   }
+
+   function fetchProduct(uint _productId) public view
+   returns(
+      uint id, 
+      string memory productName,
+      address owner,
+      address payable seller,
+      string memory imageUrl1,
+      string memory imageUrl2,
+      string memory description,
+      string memory location,
+      uint price
+   ) {
+      return productsData.fetch(_productId);
    }
 }

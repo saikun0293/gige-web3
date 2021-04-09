@@ -20,21 +20,22 @@ library AuthenticationLib {
 
    function add(
       Data storage self,
+      address _key,
       string memory _name, 
       string memory _email, 
       string memory _phone
    ) public {
-      self.keys.push(msg.sender);
-      self.userInfo[msg.sender] = UserInfo({
+      self.keys.push(_key);
+      self.userInfo[_key] = UserInfo({
          name: _name,
          email: _email,
          phone: _phone
       });
    }
 
-   function get(Data storage self) 
+   function get(Data storage self, address _key) 
    public view returns(string memory name, string memory email, string memory phone) {
-      UserInfo memory userInfo = self.userInfo[msg.sender];
-      return (userInfo.name, userInfo.email, userInfo.phone);
+      UserInfo memory _userInfo = self.userInfo[_key];
+      return (_userInfo.name, _userInfo.email, _userInfo.phone);
    }
 }

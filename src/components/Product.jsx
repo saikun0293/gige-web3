@@ -11,7 +11,19 @@ export const Product = ({ transactions, account }) => {
 	useEffect(() => {
 		;(async () => {
 			try {
-				const product = await transactions.methods.products(productId).call()
+				const res = await transactions.methods.fetchUserInfo().call({ from: account })
+				console.log(res)
+			} catch (err) {
+				console.log(err)
+				history.push("/signUp")
+			}
+		})()
+	}, [account, transactions.methods, history])
+
+	useEffect(() => {
+		;(async () => {
+			try {
+				const product = await transactions.methods.fetchProduct(productId).call()
 				setProduct(product)
 				const userInfo = await transactions.methods.fetchUserInfo().call({ from: product.seller })
 				setSeller(userInfo)
@@ -30,13 +42,13 @@ export const Product = ({ transactions, account }) => {
 				onClick={() => {
 					transactions.methods
 						.buyProduct(productId)
-						.send({ from: account, value: product.price })
+						.send({ from: account, value: window.web3.utils.toWei(product.price, "Ether") })
 						.on("receipt", receipt => {
 							console.log(receipt)
 							history.push("/")
 						})
 						.on("error", error => {
-							console.error(error)
+							console.log(error.message)
 						})
 				}}
 			>

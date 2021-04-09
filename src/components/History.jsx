@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
-export const Dashboard = ({ transactions, account }) => {
+export const History = ({ transactions, account }) => {
 	const [products, setProducts] = useState([])
 
 	useEffect(() => {
@@ -21,19 +21,19 @@ export const Dashboard = ({ transactions, account }) => {
 			)
 
 			const productsCollected = (await Promise.all(productsReceived)).filter(
-				({ seller, owner }) => owner === seller
+				({ seller, owner }) => owner !== seller && owner === account
 			)
 
 			setProducts(productsCollected)
 		})()
-	}, [transactions])
+	}, [transactions, account])
 
 	console.log(products)
 	console.log(account)
 
 	return (
 		<div>
-			<h1>Dashboard</h1>
+			<h1>History</h1>
 			<br />
 			{products.map(product => (
 				<p key={product.id}>

@@ -6,6 +6,7 @@ import { Dashboard } from "./Dashboard"
 import { SellProduct } from "./SellProduct"
 import { SignUp } from "./SignUp"
 import { Product } from "./Product"
+import { History } from "./History"
 
 export const App = () => {
 	const [account, setAccount] = useState(null)
@@ -43,6 +44,11 @@ export const App = () => {
 				path='/'
 				exact
 				render={() => <Dashboard transactions={transactions} account={account} />}
+			/>
+			<Route
+				path='/history'
+				exact
+				render={() => <History transactions={transactions} account={account} />}
 			/>
 			<Route
 				path='/sell'

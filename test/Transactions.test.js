@@ -2,7 +2,7 @@ const Transactions = artifacts.require("./Transactions.sol")
 
 require("chai").use(require("chai-as-promised")).should()
 
-contract("Transactions", ([accn1, seller, buyer]) => {
+contract("Transactions", ([accn1, buyer, seller]) => {
 	let transactions
 
 	before(async () => {
@@ -32,28 +32,36 @@ contract("Transactions", ([accn1, seller, buyer]) => {
 			await transactions.sellProduct(
 				"xyz",
 				"url1",
+				"url2",
 				"description for xyz",
+				"location 123",
 				web3.utils.toWei("1", "Ether"),
 				{ from: seller }
 			)
 			await transactions.sellProduct(
 				"xyz",
 				"url1",
+				"url2",
 				"description for xyz",
+				"location 123",
 				web3.utils.toWei("2", "Ether"),
 				{ from: seller }
 			)
 			await transactions.sellProduct(
 				"xyz",
 				"url1",
+				"url2",
 				"description for xyz",
+				"location 123",
 				web3.utils.toWei("4", "Ether"),
 				{ from: seller }
 			)
 			await transactions.sellProduct(
 				"xyz",
 				"url1",
+				"url2",
 				"description for xyz",
+				"location 123",
 				web3.utils.toWei("5", "Ether"),
 				{ from: seller }
 			)
@@ -64,18 +72,19 @@ contract("Transactions", ([accn1, seller, buyer]) => {
 			await transactions.buyProduct(3, { from: buyer, value: web3.utils.toWei("5", "Ether") })
 				.should.be.rejected
 			await transactions.buyProduct(2, { from: buyer, value: web3.utils.toWei("10", "Ether") })
-				.should.be.rejected
 			await transactions.buyProduct(5).should.be.rejected
 			await transactions.buyProduct(0, { from: seller }).should.be.rejected
 		})
 
 		it("checks every product transaction", async () => {
-			const result = await transactions.products(3)
-			assert.equal(result.name, "xyz")
+			const result = await transactions.fetchProduct(3)
+			assert.equal(result.productName, "xyz")
 			assert.equal(result.owner, buyer)
 			assert.equal(result.seller, seller)
-			assert.equal(result.imageUrl, "url1")
+			assert.equal(result.imageUrl1, "url1")
+			assert.equal(result.imageUrl2, "url2")
 			assert.equal(result.description, "description for xyz")
+			assert.equal(result.location, "location 123")
 			assert.equal(result.price, web3.utils.toWei("5", "Ether"))
 		})
 	})
