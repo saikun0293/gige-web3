@@ -21,11 +21,6 @@ contract Transactions {
       string location,
       uint price
    );
-
-   event ProductBought(
-      uint id,
-      address owner
-   );
    
    modifier shouldBeAuthenticated(bool _shouldBeAuthenticated) {
       require(
@@ -80,10 +75,6 @@ contract Transactions {
    hasEnoughAmount(productsData.products[_productId].price)  {
       productsData.getToBuy(_productId);
       address(productsData.products[_productId].seller).transfer(msg.value);
-      emit ProductBought({
-         id: _productId,
-         owner: msg.sender
-      });
    }
 
    function totalProducts() public view returns(uint) {

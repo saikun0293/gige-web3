@@ -1,12 +1,12 @@
-import React, { useEffect, useState, useCallback } from "react"
-import { BrowserRouter, Route } from "react-router-dom"
-import Web3 from "web3"
+import React, { useState, useEffect } from "react"
 import Transaction from "../abis/Transactions.json"
+import Web3 from "web3"
+import { BrowserRouter, Route } from "react-router-dom"
 import { Dashboard } from "./Dashboard"
-import { History } from "./History"
-import { Product } from "./Product"
 import { SellProduct } from "./SellProduct"
 import { SignUp } from "./SignUp"
+import { Product } from "./Product"
+import { History } from "./History"
 
 export const App = () => {
 	const [account, setAccount] = useState(null)
@@ -36,11 +36,6 @@ export const App = () => {
 		})()
 	}, [])
 
-	const fetchUserInfo = useCallback(
-		() => transactions.methods.fetchUserInfo().call({ from: account }),
-		[transactions, account]
-	)
-
 	return transactions === null ? (
 		<div>Loading</div>
 	) : (
@@ -48,41 +43,27 @@ export const App = () => {
 			<Route
 				path='/'
 				exact
-				render={() => (
-					<Dashboard transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
-				)}
+				render={() => <Dashboard transactions={transactions} account={account} />}
 			/>
 			<Route
 				path='/history'
 				exact
-				render={() => (
-					<History transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
-				)}
+				render={() => <History transactions={transactions} account={account} />}
 			/>
 			<Route
 				path='/sell'
 				exact
-				render={() => (
-					<SellProduct
-						transactions={transactions}
-						account={account}
-						fetchUserInfo={fetchUserInfo}
-					/>
-				)}
+				render={() => <SellProduct transactions={transactions} account={account} />}
 			/>
 			<Route
 				path='/product/:id'
 				exact
-				render={() => (
-					<Product transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
-				)}
+				render={() => <Product transactions={transactions} account={account} />}
 			/>
 			<Route
 				path='/signUp'
 				exact
-				render={() => (
-					<SignUp transactions={transactions} account={account} fetchUserInfo={fetchUserInfo} />
-				)}
+				render={() => <SignUp transactions={transactions} account={account} />}
 			/>
 		</BrowserRouter>
 	)

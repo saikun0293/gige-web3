@@ -1,8 +1,8 @@
-import React, { useRef } from "react"
-import { useDataInfo } from "../utils"
+import React, { useEffect, useRef } from "react"
+import { useHistory } from "react-router-dom"
 
-export const SellProduct = ({ transactions, account, fetchUserInfo }) => {
-	const { data: userInfo } = useDataInfo(fetchUserInfo, "/signUp")
+export const SellProduct = ({ transactions, account }) => {
+	const history = useHistory()
 
 	const productNameRef = useRef()
 	const imageUrl1Ref = useRef()
@@ -11,7 +11,17 @@ export const SellProduct = ({ transactions, account, fetchUserInfo }) => {
 	const locatipnRef = useRef()
 	const priceRef = useRef()
 
-	console.log(userInfo)
+	useEffect(() => {
+		;(async () => {
+			try {
+				const res = await transactions.methods.fetchUserInfo().call({ from: account })
+				console.log(res)
+			} catch (err) {
+				console.log(err)
+				history.push("/signUp")
+			}
+		})()
+	}, [account, transactions.methods, history])
 
 	return (
 		<form

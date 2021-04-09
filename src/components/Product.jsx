@@ -1,14 +1,24 @@
 import React, { useEffect, useState } from "react"
 import { useHistory, useParams } from "react-router-dom"
-import { useDataInfo } from "../utils"
 
-export const Product = ({ transactions, account, fetchUserInfo }) => {
+export const Product = ({ transactions, account }) => {
 	const history = useHistory()
 	const { id: productId } = useParams()
-	const { data: userInfo } = useDataInfo(fetchUserInfo, "/signUp")
 
 	const [product, setProduct] = useState(null)
 	const [seller, setSeller] = useState(null)
+
+	useEffect(() => {
+		;(async () => {
+			try {
+				const res = await transactions.methods.fetchUserInfo().call({ from: account })
+				console.log(res)
+			} catch (err) {
+				console.log(err)
+				history.push("/signUp")
+			}
+		})()
+	}, [account, transactions.methods, history])
 
 	useEffect(() => {
 		;(async () => {
@@ -25,7 +35,6 @@ export const Product = ({ transactions, account, fetchUserInfo }) => {
 
 	console.log(product)
 	console.log(seller)
-	console.log(userInfo)
 
 	return (
 		<div>
