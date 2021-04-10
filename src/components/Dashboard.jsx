@@ -72,8 +72,8 @@ export const Dashboard = ({ transactions, account }) => {
         </div>
       </header>
       <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-24 py-10">
-        {products.map((product) => (
-          <div class="w-72 shadow-lg m-4 font-body">
+        {products.map((product, index) => (
+          <div key={index} class="w-72 shadow-lg m-4 font-body">
             <img
               class="w-full h-36 object-cover"
               src={product.imageUrl1}
